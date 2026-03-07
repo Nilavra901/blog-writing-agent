@@ -1,48 +1,5 @@
-"orchestrator"
 
-# -----------------------------
-# 4) Research (Tavily)
-# -----------------------------
-def _tavily_search(query: str, max_results: int = 5) -> List[dict]:
-    if not os.getenv("TAVILY_API_KEY"):
-        return []
-    try:
-        from langchain_community.tools.tavily_search import TavilySearchResults  # type: ignore
-        tool = TavilySearchResults(max_results=max_results)
-        results = tool.invoke({"query": query})
-        out: List[dict] = []
-        for r in results or []:
-            out.append(
-                {
-                    "title": r.get("title") or "",
-                    "url": r.get("url") or "",
-                    "snippet": r.get("content") or r.get("snippet") or "",
-                    "published_at": r.get("published_date") or r.get("published_at"),
-                    "source": r.get("source"),
-                }
-            )
-        return out
-    except Exception:
-        return []
-
-def _iso_to_date(s: Optional[str]) -> Optional[date]:
-    if not s:
-        return None
-    try:
-        return date.fromisoformat(s[:10])
-    except Exception:
-        return None
-
-RESEARCH_SYSTEM = """You are a research synthesizer.
-
-Given raw web search results, produce EvidenceItem objects.
-
-Rules:
-- Only include items with a non-empty url.
-- Prefer relevant + authoritative sources.
-- Normalize published_at to ISO YYYY-MM-DD if reliably inferable; else null (do NOT guess).
-- Keep snippets short.
-- Deduplicate by URL.
+       
 """
 
 def research_node(state: State) -> dict:
