@@ -1,38 +1,4 @@
-
-    assert state["plan"] is not None
-    return [
-        Send(
-            "worker",
-            {
-                "task": task.model_dump(),
-                "topic": state["topic"],
-                "mode": state["mode"],
-                "as_of": state["as_of"],
-                "recency_days": state["recency_days"],
-                "plan": state["plan"].model_dump(),
-                "evidence": [e.model_dump() for e in state.get("evidence", [])],
-            },
-        )
-        for task in state["plan"].tasks
-    ]
-
-# -----------------------------
-# 7) Worker
-# -----------------------------
-WORKER_SYSTEM = """You are a senior technical writer and developer advocate.
-Write ONE section of a technical blog post in Markdown.
-
-Constraints:
-- Cover ALL bullets in order.
-- Target words ±15%.
-- Output only section markdown starting with "## <Section Title>".
-
-Scope guard:
-- If blog_kind=="news_roundup", do NOT drift into tutorials (scraping/RSS/how to fetch).
-  Focus on events + implications.
-
-Grounding:
-- If mode=="open_book": do not introduce any specific event/company/model/funding/policy claim unless supported by provided Evidence URLs.
+ompany/model/funding/policy claim unless supported by provided Evidence URLs.
   For each supported claim, attach a Markdown link ([Source](URL)).
   If unsupported, write "Not found in provided sources."
 - If requires_citations==true (hybrid tasks): cite Evidence URLs for external claims.
